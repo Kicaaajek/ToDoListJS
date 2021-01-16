@@ -1,0 +1,30 @@
+<%- include('header'); %>
+<h1> <%= actualDate %></h1>
+<h1><%= actualDay %></h1>
+<h2> Twoja lista rzeczy do zrobienia: </h2>
+<br/>
+
+<div id="lista">
+  <form id="lista" action="/list" method="post">
+  <% if(items.length==0)
+  { %>
+    <p>Twoja lista nie zawiera jeszcze żadnych zadań </p>
+  <% }
+  else {
+     for(var i=0;i<items.length;i++)
+    { %>
+    <input type=checkbox name="checkbox" onclick="removeItem">
+    <label> <%= items[i] %> </label></br>
+  <% }
+  } %>
+  </form>
+</div>
+<br/>
+<div id="add">
+<form id="addNew" action="/list" method="post">
+  <label>Dodaj nowe zadanie</label>
+  <input name="item" type="text"/>
+  <input type="submit" name="submit" value="Dodaj"/>
+</form>
+</div>
+<%- include('footer'); %>
