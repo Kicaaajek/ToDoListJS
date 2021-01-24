@@ -22,43 +22,29 @@ db.connect((err) => {
 });
 
 app.get('/', (req, res) => {
-    let sql = 'CREATE DATABASE ToDoList';
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Database created");
-    });
-    let sql = 'CREATE TABLE tasks(id int AUTO_INCREMENT, ToDo VARCHAR(255), PRIMARY KEY(id))';
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.log(result);
-        res.send("Table created");
-    });
   res.render('index', {actualDate: actualDate});
 });
 
-app.get('/list',(req,res)=>{
+app.get('/list', (req, res) => {
     var items = new Array();
-    let sql = 'INSERT INTO persons SET ?';
-    let query = db.query(sql, (err, result) => {
+    let sql = 'SELECT * FROM tasks';
+    db.query(sql, (err, results) => {
         if (err) throw err;
-        console.log(result);
-        items.push(result);
-        res.send("Uploaded");
+        for (const prop in results) {
+            items.push(Object.values(results[prop]));
+        }
+        console.log("Wyniki po ", items);
+        res.render('list', { actualDate: actualDate, actualDay: actualDay, items: items });
     });
-    res.render('list', {actualDate: actualDate, actualDay:actualDay, items:items});
 });
 
 app.post('/list',(req,res)=>{
-    let post = { ToDo: req.body.item};
+    let ToDo = req.body.item;
     let sql = 'INSERT INTO tasks SET ?';
-    let query = db.query(sql, post, (err, result) => {
+    db.query(sql, { ToDo: ToDo } , (err, result) => {
     if (err) throw err;
     console.log(result);
-    res.send("Uploaded");
-    });
-  //items.push(toDo);
-  
+    });  
   res.redirect('/list');
 });
 

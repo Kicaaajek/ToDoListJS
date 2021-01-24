@@ -6,17 +6,11 @@
 
 <div id="lista">
   <form id="lista" action="/list" method="post">
-  <% if(items.length==0)
-  { %>
-    <p>Twoja lista nie zawiera jeszcze żadnych zadań </p>
-  <% }
-  else {
-     for(var i=0;i<items.length;i++)
+ <%for(var i=0;i<items.length;i++)
     { %>
     <input type=checkbox name="checkbox" onclick="removeItem">
     <label> <%= items[i] %> </label></br>
-  <% }
-  } %>
+  <% } %>
   </form>
 </div>
 <br/>
