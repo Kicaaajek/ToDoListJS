@@ -26,12 +26,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/list', (req, res) => {
-    var items = new Array();
+
     let sql = 'SELECT * FROM tasks';
+    var items = new Array();
     db.query(sql, (err, results) => {
         if (err) throw err;
-        for (const prop in results) {
-            items.push(Object.values(results[prop]));
+
+        for (var prop in results) {
+            items.push(results[prop].ToDo);
         }
         console.log("Wyniki po ", items);
         res.render('list', { actualDate: actualDate, actualDay: actualDay, items: items });
@@ -44,10 +46,21 @@ app.post('/list',(req,res)=>{
     db.query(sql, { ToDo: ToDo } , (err, result) => {
     if (err) throw err;
     console.log(result);
-    });  
+    });
   res.redirect('/list');
 });
 
+app.post('/list', (req, res) => {
+    req.body.getElementById("list").addEventListener('change', function (e) {
+        var toDoo = items[e.target.value];
+    });
+    let sql = 'DELETE FROM tasks WHERE ToDo = '+mysql.escape(toDoo);
+    db.query(sql, (err, result) => {
+        if (err) throw err;
+        console.log(result);
+    });
+    res.redirect('/list');
+});
 app.get('/about',(req,res)=>{
   res.render('about');
 });
@@ -62,11 +75,4 @@ const options={ year: "numeric",
                 day: "numeric"};
 const opt={weekday: "long"};
 var actualDate=date.toLocaleDateString(locales="pl-UK", options);
-var actualDay = date.toLocaleDateString(locales="pl-UK", opt);
-//var items = new Array();
-//var workItems = new Array();
-//items.push("Umyj naczynia");
-//items.push("Zrób zakupy");
-//items.push("Zadzwoń do okulisty");
-
-
+var actualDay = date.toLocaleDateString(locales = "pl-UK", opt);

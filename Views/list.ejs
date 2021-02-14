@@ -4,11 +4,11 @@
 <h2> Twoja lista rzeczy do zrobienia: </h2>
 <br/>
 
-<div id="lista">
+<div id="list">
   <form id="lista" action="/list" method="post">
  <%for(var i=0;i<items.length;i++)
     { %>
-    <input type=checkbox name="checkbox" onclick="removeItem">
+    <input type=checkbox name="checkbox value=<%[i]%>">
     <label> <%= items[i] %> </label></br>
   <% } %>
   </form>
