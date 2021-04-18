@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const sql = require("mysql");
 const app=express();
 const port=3000;
+const { auth } = require('express-openid-connect');
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
@@ -21,8 +22,28 @@ db.connect((err) => {
     console.log("Connected");
 });
 
-app.get('/', (req, res) => {
-  res.render('index', {actualDate: actualDate});
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: 'a long, randomly-generated string stored in env',
+  baseURL: 'http://localhost:3000',
+  clientID: 'TCDVY7D9EfTcduvBoFYsVL1oUGvy5Wgr',
+  issuerBaseURL: 'https://dev-9qh84mpr.eu.auth0.com'
+};
+app.use(auth(config));
+
+//app.get('/', (req, res) => {
+//  res.render('index', {actualDate: actualDate});
+//  res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+//});
+app.get('/', (req, res, next) => {
+  res.render('index', {
+    actualDate: actualDate,
+    isAuthenticated: req.oidc.isAuthenticated()
+  });
+});
+app.post('/',(req, res) => {
+   function signin() {return res.redirect('/login')}
 });
 
 app.get('/list', (req, res) => {

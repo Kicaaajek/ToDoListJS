@@ -1,4 +1,11 @@
-<%- include('header'); %>
+<%- include('Partials/header'); %>
 <h1> Dziś jest <%= actualDate %>.</h1>
 <h2>Witaj w aplikacji ToDoList</h2>
-<%- include('footer'); %>
+<p> Masz problem z zarządzaniem czasem, projektami lub organizacją zadań? Załóż konto!</p>
+<p> Aplikacja oferuje tworzenie listy wielopoziomowej, dzielenie zadań na podzadania. Jest całkowicie darmowa. </p>
+<% if (locals.isAuthenticated) { %>
+    <p>Jesteś zalogowany.</p>
+      <p><a href="/list" class="underline">Przejdź do listy zadań.</a>  <a href="/logout" class="underline">Wyloguj.</a> </p>
+<% } else { %>
+    <p>Nie jesteś zalogowany. <a href="/login" class="underline">Zaloguj się lub zarejestruj</a>.</p>
+<% } %><%- include('Partials/footer'); %>
