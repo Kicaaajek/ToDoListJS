@@ -31,7 +31,10 @@ const config = {
   issuerBaseURL: 'https://dev-9qh84mpr.eu.auth0.com'
 };
 app.use(auth(config));
-
+app.use(function (req, res, next) {
+  var userEmail = req.oidc.user.email;
+  next();
+});
 //app.get('/', (req, res) => {
 //  res.render('index', {actualDate: actualDate});
 //  res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
@@ -42,28 +45,35 @@ app.get('/', (req, res, next) => {
     isAuthenticated: req.oidc.isAuthenticated()
   });
 });
-app.post('/',(req, res) => {
-   function signin() {return res.redirect('/login')}
-});
 
 app.get('/list', (req, res) => {
+    let table= 'SHOW TABLES LIKE table = '+userEmail;
+    if(table==null){
+      let sql = 'CREATE TABLE table = ' + userEmail + ' (id INT AUTO_INCREMENT PRIMARY KEY, todo VARCHAR(255), taskdone CHAR(1))';
+      var items = new Array();
+      db.query(sql, (err, results) => {
+          if (err) throw err;
+          res.render('list', { actualDate: actualDate, actualDay: actualDay, items: items });
+        });
+    }
+    else {
+      let sql = 'SELECT * FROM table = ' + userEmail;
+      var items = new Array();
+      db.query(sql, (err, results) => {
+          if (err) throw err;
 
-    let sql = 'SELECT * FROM tasks';
-    var items = new Array();
-    db.query(sql, (err, results) => {
-        if (err) throw err;
-
-        for (var prop in results) {
-            items.push(results[prop].ToDo);
-        }
-        console.log("Wyniki po ", items);
-        res.render('list', { actualDate: actualDate, actualDay: actualDay, items: items });
+          for (var prop in results) {
+              items.push(results[prop].ToDo);
+          }
+          console.log("Wyniki po ", items);
+          res.render('list', { actualDate: actualDate, actualDay: actualDay, items: items });
     });
+    }
 });
 
 app.post('/list',(req,res)=>{
     let ToDo = req.body.item;
-    let sql = 'INSERT INTO tasks SET ?';
+    let sql = 'INSERT INTO table =' + userEmail + '  SET ?';
     db.query(sql, { ToDo: ToDo } , (err, result) => {
     if (err) throw err;
     console.log(result);
@@ -75,7 +85,7 @@ app.post('/list', (req, res) => {
     req.body.getElementById("list").addEventListener('change', function (e) {
         var toDoo = items[e.target.value];
     });
-    let sql = 'DELETE FROM tasks WHERE ToDo = '+mysql.escape(toDoo);
+    let sql = 'DELETE FROM table= ' + userEmail + ' WHERE ToDo = '+ mysql.escape(toDoo);
     db.query(sql, (err, result) => {
         if (err) throw err;
         console.log(result);
