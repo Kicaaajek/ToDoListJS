@@ -3,11 +3,10 @@ const bodyParser = require("body-parser");
 const sql = require("mysql");
 const app=express();
 const port=3000;
-const { auth } = require('express-openid-connect');
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static("public"));
-
+const auth = require(__dirname + "/user.js");
 const db = sql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -22,18 +21,9 @@ db.connect((err) => {
     console.log("Connected");
 });
 
-const config = {
-  authRequired: false,
-  auth0Logout: true,
-  secret: 'a long, randomly-generated string stored in env',
-  baseURL: 'http://localhost:3000',
-  clientID: 'TCDVY7D9EfTcduvBoFYsVL1oUGvy5Wgr',
-  issuerBaseURL: 'https://dev-9qh84mpr.eu.auth0.com'
-};
-app.use(auth(config));
-app.use(function (req, res, next) {
-  var userEmail = req.oidc.user.email;
-  next();
+app.get('/users', getAccessToken(), (req, res) => {
+    let userIds = getUsersFromDB(); //Array of User IDs from MongoDB for example (to be used later)
+    console.log('Auth0 Access Token', req.auth0AccessToken);
 });
 //app.get('/', (req, res) => {
 //  res.render('index', {actualDate: actualDate});
